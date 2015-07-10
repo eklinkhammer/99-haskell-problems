@@ -1,10 +1,14 @@
 module First_Ten
-(     myLast        -- Problem 1
-    , myButLast       -- Problem 2
+(     myLast       -- Problem 1
+    , myButLast    -- Problem 2
     , elementAt    -- Problem 3
     , myLength     -- Problem 4
     , myReverse    -- Problem 5
     , isPalindrome -- Problem 6
+    , flatten      -- Problem 7
+    , compress     -- Problem 8
+    , pack         -- Problem 9
+    , encode       -- Problem 10
 
 ) where
 
@@ -50,3 +54,32 @@ myReverse xs = rev xs []
 -- Determines if list is a palindorome (same forwards as backwards)
 isPalindrome :: (Eq a) => [a] -> Bool
 isPalindrome list = reverse list == list
+
+-- Problem 7
+-- Flatten a list. Take a list of lists and get a list
+data NestedList a = Elem a | List [NestedList a]
+flatten :: NestedList a -> [a]
+flatten (Elem a)      = [a]
+flatten (List (x:xs)) = flatten x ++ flatten (List xs)
+flatten (List [])     = []
+
+-- Problem 8
+-- Removes duplicate elements
+compress :: (Eq a) => [a] -> [a]
+compress [] = []
+compress [x] = [x]
+compress (a:xs)
+  | a == head xs = compress xs
+  | otherwise = a : compress xs
+
+-- Problem 9
+-- Pack repeated consecutive elements into a sublist
+pack :: (Eq a) => [a] -> [[a]]
+pack [] = []
+pack [x] = [[x]]
+pack (x:xs) = (x : takeWhile (==x) xs) : pack (dropWhile (==x) xs)
+
+-- Problem 10
+-- Run length encoding on a list
+encode :: (Eq a) => [a] -> [(Int, a)]
+encode list = map (\x -> (length x, head x)) (pack list)

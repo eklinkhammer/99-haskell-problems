@@ -5,7 +5,11 @@ module Second_Ten
     , encode_direct     -- Problem 13
     , dupli             -- Problem 14
     , repli             -- Problem 15
-    , dropN             -- Problem 16
+    , dropEvery         -- Problem 16
+    , split             -- Problem 17
+    , slice             -- Problem 18
+    , rotate            -- Problem 19
+    , removeAt          -- Problem 20
 ) where
 
 import First_Ten
@@ -70,9 +74,56 @@ dupli' list = repli list 2
 
 -- Problem 16
 -- Drop the Nth element from the list
-dropN :: Int -> [a] -> [a]
-dropN 1 _ = []
-dropN n list = 
+dropEvery :: [a] -> Int -> [a]
+dropEvery _ 1 = []
+dropEvery list n = dropNHelper n 1 list
+    where
+        dropNHelper _ _ [] = []
+        dropNHelper stride inc (x:xs)
+            | stride == inc = dropNHelper stride 1 xs
+            | otherwise = x : dropNHelper stride (inc+1) xs
+
+-- Problem 17
+-- Split the list into two lists, one of length n and the other 
+--  being the rest of the list.
+split :: [a]-> Int -> ([a], [a])
+split list n = (first, second)
+    where
+        first = splitHelpFirst 0 n list
+        second = splitHelpSecond 0 n list
+        splitHelpFirst _ _ [] = []
+        splitHelpFirst ptr l (x:xs) 
+            | ptr >= l = []
+            | otherwise = x : splitHelpFirst (ptr+1) l xs
+        splitHelpSecond _ _ [] = []
+        splitHelpSecond ptr l (x:xs)
+            | ptr >= l = x : splitHelpSecond (ptr+1) l xs
+            | otherwise = splitHelpSecond (ptr+1) l xs
 
 
+-- Problem 17 - More Haskelly implementation
+split' :: [a] -> Int -> ([a], [a])
+split' (x:xs) n | n > 0 = let (f,l) = split xs (n-1) in (x : f, l)
+split' xs _ = ([], xs)
+
+-- Problem 18
+-- Splices a list (returns the sublist between indecies given)
+slice :: [a] -> Int -> Int -> [a]
+slice [] _ _ = []
+slice (x:xs) 1 1 = [x]
+slice (x:xs) 1 b = x : slice xs 1 (b-1)
+slice (x:xs) a b = slice xs (a-1) (b-1)
+
+-- Problem 19
+-- Rotate a list n places to the left
+rotate :: [a] -> Int -> [a]
+rotate xs 0 = xs
+rotate (x:xs) n 
+    | n >= 0     = rotate (xs ++ [x]) (n-1)
+    | otherwise = rotate (x:xs)    (n + length (x:xs))
+
+-- Problem 20
+-- Remove the Kth element from a list
+removeAt :: Int -> [a] -> (Maybe a, [a])
+removeAt k list = (Just (list !! (k)), take k list ++ drop (k+1) list)
 

@@ -9,23 +9,16 @@ module First_Ten
     , compress     -- Problem 8
     , pack         -- Problem 9
     , encode       -- Problem 10
-
 ) where
 
+import Data.List (group)
 -- Problem 1
--- Return the last element of a list
 myLast :: [a] -> a
-myLast []         = error "No last element exists!"
-myLast [x]        = x
-myLast (x:xs)     = myLast xs
+myLast = head . reverse
 
 -- Problem 2
--- Return the secodn to last element of a list
 myButLast :: [a] -> a
-myButLast []        = error "Not second-to-last element in an empty list!"
-myButLast [x]       = error "No second-to-last element in single element list!"
-myButLast [x,_]     = x
-myButLast (x:xs)    = myButLast xs
+myButLast = head . reverse . init
 
 -- Problem 3
 -- Find the kth element of a list    
@@ -37,18 +30,13 @@ elementAt x n
     | otherwise = error "Index cannot be negative."
 
 -- Problem 4
--- Finds the length of the list
 myLength :: [a] -> Int
-myLength []     = 0
-myLength (x:xs) = 1 + myLength xs   
+myLength list = foldr (+) 0 $ map (\x -> 1) list 
 
 -- Problem 5
 -- Reverse a list
 myReverse :: [a] -> [a]
-myReverse xs = rev xs []
-    where
-        rev [] reversed     = reversed
-        rev (x:xs) reversed = rev xs (x:reversed)
+myReverse = foldl (flip (:)) []
 
 -- Problem 6
 -- Determines if list is a palindorome (same forwards as backwards)
@@ -57,29 +45,23 @@ isPalindrome list = reverse list == list
 
 -- Problem 7
 -- Flatten a list. Take a list of lists and get a list
+
 data NestedList a = Elem a | List [NestedList a]
 flatten :: NestedList a -> [a]
-flatten (Elem a)      = [a]
-flatten (List (x:xs)) = flatten x ++ flatten (List xs)
-flatten (List [])     = []
+flatten (Elem a) = [a]
+flatten (List a) = concatMap flatten a
 
 -- Problem 8
 -- Removes duplicate elements
 compress :: (Eq a) => [a] -> [a]
-compress [] = []
-compress [x] = [x]
-compress (a:xs)
-  | a == head xs = compress xs
-  | otherwise = a : compress xs
+compress = map head . group
 
 -- Problem 9
 -- Pack repeated consecutive elements into a sublist
 pack :: (Eq a) => [a] -> [[a]]
-pack [] = []
-pack [x] = [[x]]
-pack (x:xs) = (x : takeWhile (==x) xs) : pack (dropWhile (==x) xs)
+pack = group 
 
 -- Problem 10
 -- Run length encoding on a list
 encode :: (Eq a) => [a] -> [(Int, a)]
-encode list = map (\x -> (length x, head x)) (pack list)
+encode = map (\x -> (length x, head x)) . pack

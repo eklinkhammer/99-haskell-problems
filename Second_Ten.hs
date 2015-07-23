@@ -7,6 +7,7 @@ module Second_Ten
     , repli             -- Problem 15
     , dropEvery         -- Problem 16
     , split             -- Problem 17
+    , split'
     , slice             -- Problem 18
     , rotate            -- Problem 19
     , removeAt          -- Problem 20
